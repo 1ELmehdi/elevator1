@@ -1,33 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevator</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <p id="greetings1">(loading...)</p>
-  <p id="greetings2">(loading...)</p>
-  <script type="text/javascript">
-    const greetings = msg => Module.ccall(
-      'greetings', 'number', [ 'string' ], [ msg ]
-    )
-    const greetingsAsync = async (msg, delay) => await Module.ccall(
-      'greetingsAsync' , undefined, [ 'string', 'number' ], [ msg, delay ], 
-      { async: true }
-    )
-    var Module = {
-      onRuntimeInitialized: async () => {
-        const sampleReturn = greetings("world")
-        
-        document.getElementById('greetings1').innerText = Module.sampleGreetings1
-        await greetingsAsync("world", sampleReturn)
-        document.getElementById('greetings2').innerText = Module.sampleGreetings2
-      }
-    };
-  </script>
-  <script type="text/javascript" src="a.out.js"></script>
+    <div class="building">
+        <div id="cabin"></div>
+        <div class="floor" id="floor1">
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn up">Up</a>
+                <a href="#" class="callbtn down">Down</a>
+            </div>
+        </div>
+        <div class="floor" id="floor0">
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn up">Up</a>
+           </div>
+        </div>
+        <div class="floor" id="floor3">
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn up">Up</a>
+                <a href="#" class="callbtn down">Down</a>
+            </div>
+        </div>
+        <div class="floor" id="floor2">
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn up">Up</a>
+                <a href="#" class="callbtn down">Down</a>
+            </div>
+        </div>
+        <div class="floor" id="floor5">
+            <div class="cabin"></div>
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn down">Down</a>
+            </div>
+        </div>
+        <div class="floor" id="floor4">
+            <div class="door left"></div>
+            <div class="door right"></div>
+            <div class="stair-door"></div>
+            <div class="wall">
+                <a href="#" class="callbtn up">Up</a>
+                <a href="#" class="callbtn down">Down</a>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="screen backlight"></div>
+            <ul>
+                <li><a href="#" class="btn row0">3</a></li>
+                <li><a href="#" class="btn row0">4</a></li>
+                <li><a href="#" class="btn row1">1</a></li>
+                <li><a href="#" class="btn row1">2</a></li>
+                <li><a href="#" class="btn row2">-1</a></li>
+                <li><a href="#" class="btn row2">0</a></li>
+                <li><a href="#" class="btn row3">&gt;&lt;</a></li>
+                <li><a href="#" class="btn row3">&lt;&gt;</a></li>
+            </ul>
+            <a href="#" class="btnstop"></a>
+        </div>
+    </div>
+    <!--div class="sprite npc000 left step0">
+    </div-->
+    <script>
+        const FLOOR_COUNT = 6;
+        const FLOORS_BY_COLUMN = 2;
+        const CABIN_FLOOR_X = 230;
+        const CABIN_FLOOR_Y = 61;
+        const CABIN_HEIGHT = 231;
+        const FLOOR_HEIGHT = 430;
+        const COLUMN_WIDTH = 518;
+        const FIRST_FLOOR = CABIN_HEIGHT + FLOOR_HEIGHT;
+        const COLUMN_HEIGHT   = FLOORS_BY_COLUMN*CABIN_HEIGHT + FLOOR_HEIGHT;
+        const BUILDING_HEIGHT = (FLOOR_COUNT/FLOORS_BY_COLUMN)*COLUMN_HEIGHT - CABIN_HEIGHT;
+        const DOOR_WIDTH = 92;
+        const DOOR_LEFT = 134;
+        const DOOR_RIGHT = 410;
+        const cabin = document.querySelector('#cabin');
+        const doors = [];
+        const between = (n, min, max) => min <= n && n < max;
+
+        let position = FIRST_FLOOR; 
+
+        function currentFloor() {
+            return Math.floor(position * 2 / COLUMN_HEIGHT);
+        }
+        function updateDoors(floor) {
+            let door = doors[floor];
+
+            door.left.style.left  = `${DOOR_LEFT + door.pos}px`;
+            door.right.style.left = `${DOOR_RIGHT - door.pos}px`;
+        }
+
+        for(let i = 0; i < FLOOR_COUNT; i++) {
+            doors.push({
+                left : document.querySelector(`#floor${i} .left`), 
+                right: document.querySelector(`#floor${i} .right`),
+                pos: i==currentFloor() ? 0 : DOOR_WIDTH
+            });
+            updateDoors(i);
+        }
+
+        function moveDoors(floor, dir) {
+            if(between(floor, 0, FLOOR_COUNT)) {
+                nextPos = doors[floor].pos + dir;
+                if(between(nextPos, 0, DOOR_WIDTH+1)) {
+                    doors[floor].pos = nextPos;
+                    updateDoors(floor);
+                }
+            }
+        }
+        function moveElevator(dir) {
+            nextPos = position + dir;
+            if(between(nextPos, CABIN_HEIGHT, BUILDING_HEIGHT)) {
+                position = nextPos;    
+                cabin.style.top  = `${2*FLOOR_HEIGHT - CABIN_FLOOR_Y - position % COLUMN_HEIGHT}px`;
+                cabin.style.left = `${CABIN_FLOOR_X + COLUMN_WIDTH * Math.floor(position / COLUMN_HEIGHT)}px`;
+            }
+        }
+
+        let dirElevator = 0;
+        let dirDoors = 0;
+        document.onkeydown = e => {
+            e.preventDefault();
+            switch(e.key) {
+                case 'ArrowUp':    dirElevator =  1; break;
+                case 'ArrowDown':  dirElevator = -1; break;
+                case 'ArrowLeft':  dirDoors = -1; break;
+                case 'ArrowRight': dirDoors =  1; break;
+            }
+        }
+        document.onkeyup= e => {
+            e.preventDefault();
+            switch(e.key) {
+                case 'ArrowUp': case 'ArrowDown':  dirElevator = 0; break;
+                case 'ArrowLeft': case 'ArrowRight': dirDoors =  0; break;
+            }
+        }
+
+        requestAnimationFrame(function animate() {
+            moveElevator(dirElevator);
+            moveDoors(currentFloor(), dirDoors);
+            requestAnimationFrame(animate);
+        });
+</script>
 </body>
 </html>
- 
- 
