@@ -34,11 +34,12 @@ export default class Adafruit_NeoPixel extends ComponentBase {
     }
 
     static OnOff(led, rgba, cssClass, threshold = 64) {
-        if(!rgba || rgba.r < threshold && rgba.g < threshold && rgba.b < threshold) {
-            led.classList.remove(cssClass)
-        }
-        else if(!led.classList.contains(cssClass)) {
-            led.classList.add(cssClass)
-        }
+        led.classList.toggle(
+            cssClass, rgba && (
+                rgba.r >= threshold || 
+                rgba.g >= threshold || 
+                rgba.b > threshold
+            )
+        )
     }
 }

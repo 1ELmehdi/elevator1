@@ -17,11 +17,11 @@
             <ul>
                 <!-- Digits d0=left, d2=colon, d4=right -->
                 <!--li class="d0 segoff"><li class="d1 segoff"><li class="d3 segoff"><li class="d4 segoff">-->
-                <li data-7seg="00" class="d0 seg0"><li data-7seg="01" class="d0 seg1"><li data-7seg="02" class="d0 seg2"><li data-7seg="03" class="d0 seg3"><li data-7seg="04" class="d0 seg4"><li data-7seg="05" class="d0 seg5"><li data-7seg="06" class="d0 seg6"><li data-7seg="07" class="d0 seg7">
-                <li data-7seg="10" class="d1 seg0"><li data-7seg="11" class="d1 seg1"><li data-7seg="12" class="d1 seg2"><li data-7seg="13" class="d1 seg3"><li data-7seg="14" class="d1 seg4"><li data-7seg="15" class="d1 seg5"><li data-7seg="16" class="d1 seg6"><li data-7seg="17" class="d1 seg7">
-                <li data-7seg="20" class="d2 seg0">
-                <li data-7seg="30" class="d3 seg0"><li data-7seg="31" class="d3 seg1"><li data-7seg="32" class="d3 seg2"><li data-7seg="33" class="d3 seg3"><li data-7seg="34" class="d3 seg4"><li data-7seg="35" class="d3 seg5"><li data-7seg="36" class="d3 seg6"><li data-7seg="37" class="d3 seg7">
-                <li data-7seg="40" class="d4 seg0"><li data-7seg="41" class="d4 seg1"><li data-7seg="42" class="d4 seg2"><li data-7seg="43" class="d4 seg3"><li data-7seg="44" class="d4 seg4"><li data-7seg="45" class="d4 seg5"><li data-7seg="46" class="d4 seg6"><li data-7seg="47" class="d4 seg7">
+                <li data-7seg-71="00" class="d0 seg0"><li data-7seg-71="01" class="d0 seg1"><li data-7seg-71="02" class="d0 seg2"><li data-7seg-71="03" class="d0 seg3"><li data-7seg-71="04" class="d0 seg4"><li data-7seg-71="05" class="d0 seg5"><li data-7seg-71="06" class="d0 seg6"><li data-7seg-71="07" class="d0 seg7">
+                <li data-7seg-71="10" class="d1 seg0"><li data-7seg-71="11" class="d1 seg1"><li data-7seg-71="12" class="d1 seg2"><li data-7seg-71="13" class="d1 seg3"><li data-7seg-71="14" class="d1 seg4"><li data-7seg-71="15" class="d1 seg5"><li data-7seg-71="16" class="d1 seg6"><li data-7seg-71="17" class="d1 seg7">
+                <li data-7seg-71="20" class="d2 seg1">
+                <li data-7seg-71="30" class="d3 seg0"><li data-7seg-71="31" class="d3 seg1"><li data-7seg-71="32" class="d3 seg2"><li data-7seg-71="33" class="d3 seg3"><li data-7seg-71="34" class="d3 seg4"><li data-7seg-71="35" class="d3 seg5"><li data-7seg-71="36" class="d3 seg6"><li data-7seg-71="37" class="d3 seg7">
+                <li data-7seg-71="40" class="d4 seg0"><li data-7seg-71="41" class="d4 seg1"><li data-7seg-71="42" class="d4 seg2"><li data-7seg-71="43" class="d4 seg3"><li data-7seg-71="44" class="d4 seg4"><li data-7seg-71="45" class="d4 seg5"><li data-7seg-71="46" class="d4 seg6"><li data-7seg-71="47" class="d4 seg7">
             </ul>
             </div>
             <div class="door left"></div>
@@ -110,6 +110,7 @@
     <script type="module">
         import Wino from "./js/Wino.js"
         import Adafruit_NeoPixel from "./js/Adafruit_NeoPixel.js"
+        import Adafruit_7segment from "./js/Adafruit_7segment.js"
         import Keypad from "./js/Keypad.js"
 
         const NEOPIXEL_CSS = 'sel'
@@ -120,7 +121,8 @@
         await window.wasmLoaded
         const wino = new Wino(Module, [
             new Keypad           (Module, PIN_KEYPAD_ROWS, PIN_KEYPAD_COLS),
-            new Adafruit_NeoPixel(Module, PIN_NEOPIXEL, (l, v) => Adafruit_NeoPixel.OnOff(l, v, NEOPIXEL_CSS), 'neo')
+            new Adafruit_NeoPixel(Module, PIN_NEOPIXEL, (l, v) => Adafruit_NeoPixel.OnOff(l, v, NEOPIXEL_CSS), 'neo'),
+            new Adafruit_7segment(Module, 0x71, (seg, val) => seg.classList.toggle('sel', val), '71')
         ]);
 
         const FLOOR_COUNT = 6;

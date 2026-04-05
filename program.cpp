@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <Adafruit_LEDBackpack.h>
 #include <Adafruit_NeoPixel.h>
 #include <Keypad.h>
 
-#define I2C_7SEG	0x70
+#define I2C_7SEG	0x71
 #define I2C_LCD 	0x20
 
 #define LCD_COLS 16
@@ -16,12 +17,14 @@ byte rows[] = {11, 10, 9, 8};
 byte cols[] = { 7,  6, 5, 4};
 
 Keypad keys(KEYMAP, rows, cols, ROWS, COLS); 
+Adafruit_7segment floorN;
 Adafruit_NeoPixel floors(10, 2, NEO_GRB + NEO_KHZ800);
 int cur = 0;
 
 void setup() {
   Serial.begin(9600);
   floors.begin();
+  floorN.begin(I2C_7SEG);
 }
 
 void loop() {
@@ -36,5 +39,11 @@ void loop() {
     
     floors.setPixelColor(cur, floors.Color(255, 64, 0));
     floors.show();
+
+    floorN.writeDigitNum(4, cur);
+    floorN.writeDigitRaw(0, 1<<0);
+    floorN.writeDigitRaw(1, 1<<6);
+    floorN.writeDigitRaw(3, 1<<3);
+    floorN.writeDisplay();
   }
 }
