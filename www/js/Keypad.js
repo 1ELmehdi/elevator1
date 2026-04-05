@@ -5,8 +5,11 @@ export default class Keypad
     #keyCount;
 
     constructor(cmodule, rows, cols, dataSuffix) {
+        const dataPrefix = 'data-pad'
         const id = JSON.stringify([rows, cols])
-        const dataAttr = dataSuffix ? `data-Keypad-${dataSuffix}` : 'data-Keypad'
+        const dataAttr = dataSuffix 
+            ? `${dataPrefix}-${dataSuffix}` 
+            : dataPrefix
 
         cmodule.Keypad ??= {}
         cmodule.Keypad[id] = this

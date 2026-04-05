@@ -91,28 +91,79 @@ a.callbtn {
     display: block;
     position: absolute;
     overflow: hidden;
-    left: 447px;
-    width: 14px;
-    height: 11px;
+    left: 440px;
+    width: 28px;
+    height: 30px;
+    color: transparent;
+    background-image: url('assets/updown.png');
+    background-repeat: no-repeat;
+}
+.callbtn.sel  , .callbtn:hover   { 
+    background-image: url('assets/updown-light.png'); 
+}
+.up   { top: 219px; }
+.down { top: 250px; background-position-y: -31px; }
+
+/* Digits */
+.digits {
+    position: absolute;
+    top: 69px;
+    left: 266px;
+    z-index: 1;
+}
+
+.digits ul {
+    display: block;
+    padding:0;
+    margin:0;
+    position: relative;
+}
+
+.digits li {
+    display: block;
+    position: absolute;
+    width: 23px;
+    height: 32px;
+    padding:0;
+    background-position-x: 23px;
+    background-image: url('assets/digits.png');
+    background-repeat: no-repeat;
+    list-style-type: none;
     color: transparent;
 }
-.up {
-    background-repeat: no-repeat;
-    top: 222px;
+
+.d0 { left: 0; }
+.d1 { left: 24px; }
+.d2 { left: 48px; }
+.d3 { left: 57px; }
+.d4 { left: 81px; }
+
+.d2.seg0 { 
+    width: 9px;
+    background-image: none;
 }
-.down {
-    background-repeat: no-repeat;
-    top: 267px;
+
+li.segoff { background-position-x: 0; }
+.seg0.sel { background-position-x: -23px; }
+.seg1.sel { background-position-x: -46px; }
+.seg2.sel { background-position-x: -69px; }
+.seg3.sel { background-position-x: -92px; }
+.seg4.sel { background-position-x: -115px; }
+.seg5.sel { background-position-x: -138px; }
+.seg6.sel { background-position-x: -161px; }
+.seg7.sel { background-position-x: -184px; }
+
+.d2.seg0.sel {
+    background-position-x: -207px;
 }
-.up.sel  , .up:hover   { background-image: url('assets/up.png'); }
-.down.sel, .down:hover { background-image: url('assets/down.png'); }
+
 
 /* Elevator control panel */
 
 .panel {
     z-index: 1;
     position: absolute;
-    left: 500px; top: calc(50% - 214px);
+    left: 480px; top: calc(40% - 214px);
     width: 166px;
     height: 478px;
     background-size: 166px 478px;
@@ -120,8 +171,24 @@ a.callbtn {
 }
 
 .screen {
-    width: 166px;
-    height: 96px;
+    width: 140px;
+    height: 64px;
+    padding: 32px 0 0 26px;
+}
+
+.screen p {
+    transform:scale(1,1.9); 
+    -webkit-transform:scale(1,1.9);
+    font-family: 'Doto', sans-serif;
+    color: #014;
+    font-size: 12px;
+    line-height: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+.screen.backlight p {
+    color: #03E;
 }
 
 .backlight {

@@ -1,16 +1,15 @@
 export default class Adafruit_NeoPixel
 {
-    #cmodule;
     #leds;
     
     constructor(cmodule, pin, changedCallback, dataSuffix) {
+        const dataPrefix = 'data-led'
         const dataAttr = dataSuffix 
-            ? `data-NeoPixel-${dataSuffix}` 
-            : 'data-NeoPixel'
+            ? `${dataPrefix}-${dataSuffix}` 
+            : $dataPrefix
 
         cmodule.Adafruit_NeoPixel ??= []
         cmodule.Adafruit_NeoPixel[pin] = this
-        this.#cmodule = cmodule
         this.#leds = []
         document.querySelectorAll(`*[${dataAttr}]`).forEach(e => {
             const index = parseInt(e.getAttribute(dataAttr))

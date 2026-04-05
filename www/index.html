@@ -4,18 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elevator</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="building">
         <div id="cabin"></div>
         <div class="floor" id="floor1">
+            <div class="digits">
+            <ul>
+                <!-- Digits d0=left, d2=colon, d4=right -->
+                <!--li class="d0 segoff"><li class="d1 segoff"><li class="d3 segoff"><li class="d4 segoff">-->
+                <li data-7seg="00" class="d0 seg0"><li data-7seg="01" class="d0 seg1"><li data-7seg="02" class="d0 seg2"><li data-7seg="03" class="d0 seg3"><li data-7seg="04" class="d0 seg4"><li data-7seg="05" class="d0 seg5"><li data-7seg="06" class="d0 seg6"><li data-7seg="07" class="d0 seg7">
+                <li data-7seg="10" class="d1 seg0"><li data-7seg="11" class="d1 seg1"><li data-7seg="12" class="d1 seg2"><li data-7seg="13" class="d1 seg3"><li data-7seg="14" class="d1 seg4"><li data-7seg="15" class="d1 seg5"><li data-7seg="16" class="d1 seg6"><li data-7seg="17" class="d1 seg7">
+                <li data-7seg="20" class="d2 seg0">
+                <li data-7seg="30" class="d3 seg0"><li data-7seg="31" class="d3 seg1"><li data-7seg="32" class="d3 seg2"><li data-7seg="33" class="d3 seg3"><li data-7seg="34" class="d3 seg4"><li data-7seg="35" class="d3 seg5"><li data-7seg="36" class="d3 seg6"><li data-7seg="37" class="d3 seg7">
+                <li data-7seg="40" class="d4 seg0"><li data-7seg="41" class="d4 seg1"><li data-7seg="42" class="d4 seg2"><li data-7seg="43" class="d4 seg3"><li data-7seg="44" class="d4 seg4"><li data-7seg="45" class="d4 seg5"><li data-7seg="46" class="d4 seg6"><li data-7seg="47" class="d4 seg7">
+            </ul>
+            </div>
             <div class="door left"></div>
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="2" class="callbtn up"  >Up</a>
-                <a href="#" data-NeoPixel="1" class="callbtn down">Down</a>
+                <a href="#" data-led-neo="2" class="callbtn up"  >Up</a>
+                <a href="#" data-led-neo="1" class="callbtn down">Down</a>
             </div>
         </div>
         <div class="floor" id="floor0">
@@ -23,7 +37,7 @@
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="9" class="callbtn up">Up</a>
+                <a href="#" data-led-neo="9" class="callbtn up">Up</a>
            </div>
         </div>
         <div class="floor" id="floor3">
@@ -31,8 +45,8 @@
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="15" class="callbtn up">Up</a>
-                <a href="#" data-NeoPixel="14" class="callbtn down">Down</a>
+                <a href="#" data-led-neo="15" class="callbtn up">Up</a>
+                <a href="#" data-led-neo="14" class="callbtn down">Down</a>
             </div>
         </div>
         <div class="floor" id="floor2">
@@ -40,8 +54,8 @@
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="13" class="callbtn up">Up</a>
-                <a href="#" data-NeoPixel="12" class="callbtn down">Down</a>
+                <a href="#" data-led-neo="13" class="callbtn up">Up</a>
+                <a href="#" data-led-neo="12" class="callbtn down">Down</a>
             </div>
         </div>
         <div class="floor" id="floor5">
@@ -50,7 +64,7 @@
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="18" class="callbtn down">Down</a>
+                <a href="#" data-led-neo="18" class="callbtn down">Down</a>
             </div>
         </div>
         <div class="floor" id="floor4">
@@ -58,30 +72,33 @@
             <div class="door right"></div>
             <div class="stair-door"></div>
             <div class="wall">
-                <a href="#" data-NeoPixel="17" class="callbtn up">Up</a>
-                <a href="#" data-NeoPixel="16" class="callbtn down">Down</a>
+                <a href="#" data-led-neo="17" class="callbtn up">Up</a>
+                <a href="#" data-led-neo="16" class="callbtn down">Down</a>
             </div>
         </div>
         <div class="panel">
-            <div class="screen"></div>
+            <div class="screen" data-lcd-backlight>
+                <p data-lcd-line="0"></p>
+                <p data-lcd-line="1"></p>
+            </div>
             <ul>
-                <!--  Key     data-Keypad
+                <!--  Key     data-pad
                     1 2 3 A |  0  1  2  3
                     4 5 6 B |  4  5  6  7
                     7 8 9 C |  8  9 10 11
                     * 0 # D | 12 13 14 15
                 -->
-                <li><a href="#" class="btn row0" data-NeoPixel="4" data-Keypad="4">3</a></li>
-                <li><a href="#" class="btn row0" data-NeoPixel="5" data-Keypad="5">4</a></li>
-                <li><a href="#" class="btn row1" data-NeoPixel="2" data-Keypad="1">1</a></li>
-                <li><a href="#" class="btn row1" data-NeoPixel="3" data-Keypad="2">2</a></li>
-                <li><a href="#" class="btn row2" data-NeoPixel="0" data-Keypad="13">-1</a></li>
-                <li><a href="#" class="btn row2" data-NeoPixel="1" data-Keypad="0">0</a></li>
+                <li><a href="#" class="btn row0" data-led-neo="4" data-pad="4">3</a></li>
+                <li><a href="#" class="btn row0" data-led-neo="5" data-pad="5">4</a></li>
+                <li><a href="#" class="btn row1" data-led-neo="2" data-pad="1">1</a></li>
+                <li><a href="#" class="btn row1" data-led-neo="3" data-pad="2">2</a></li>
+                <li><a href="#" class="btn row2" data-led-neo="0" data-pad="13">-1</a></li>
+                <li><a href="#" class="btn row2" data-led-neo="1" data-pad="0">0</a></li>
 
-                <li><a href="#" class="btn row3" data-NeoPixel="6" data-Keypad="7">&gt;&lt;</a></li>
-                <li><a href="#" class="btn row3" data-NeoPixel="7" data-Keypad="11">&lt;&gt;</a></li>
+                <li><a href="#" class="btn row3" data-led-neo="6" data-pad="7">&gt;&lt;</a></li>
+                <li><a href="#" class="btn row3" data-led-neo="7" data-pad="11">&lt;&gt;</a></li>
             </ul>
-            <a href="#" class="btnstop" data-NeoPixel="8" data-Keypad="15"></a>
+            <a href="#" class="btnstop" data-led-neo="8" data-pad="15"></a>
         </div>
     </div>
     <script>
@@ -103,7 +120,7 @@
         await window.wasmLoaded
         const wino = new Wino(Module, [
             new Keypad           (Module, PIN_KEYPAD_ROWS, PIN_KEYPAD_COLS),
-            new Adafruit_NeoPixel(Module, PIN_NEOPIXEL, (l, v) => Adafruit_NeoPixel.OnOff(l, v, NEOPIXEL_CSS))
+            new Adafruit_NeoPixel(Module, PIN_NEOPIXEL, (l, v) => Adafruit_NeoPixel.OnOff(l, v, NEOPIXEL_CSS), 'neo')
         ]);
 
         const FLOOR_COUNT = 6;
