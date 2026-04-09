@@ -1,11 +1,16 @@
-import ComponentBase from "./ComponentBase.js";
+import ComponentBase from "./ComponentBase.js"
+import AnalogIO from "./AnalogIO.js"
 
 export default class Keypad extends ComponentBase {
     #keyIndex = undefined;
     #keyCount;
 
     constructor(cmodule, rows, cols, dataSuffix) {
-        super(cmodule, `Keypad/${JSON.stringify([rows, cols])}`)
+        super(cmodule, [
+            `Keypad/${JSON.stringify([rows, cols])}`, 
+            ...rows.map(AnalogIO.pinKeyname),
+            ...cols.map(AnalogIO.pinKeyname)
+        ])
         this.#keyCount = rows.length * cols.length
         this.mapNodes('pad', dataSuffix, (node, attrVal) => {
             const index = parseInt(attrVal)
@@ -23,10 +28,6 @@ export default class Keypad extends ComponentBase {
         if(index<0 || index>=this.#keyCount) {
             throw new RangeError("Pressed key index out of bound")
         }
-        console.debug(index===undefined 
-            ? `Keypad: ${this.#keyIndex} released` 
-            : `Keypad: ${index} pressed`
-        )
         this.#keyIndex = index
     }
     getPressedKeyIndex() {

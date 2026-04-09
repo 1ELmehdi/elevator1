@@ -1,18 +1,22 @@
 export default class ComponentBase {
     #cmodule
-    #keyName
+    #keynames
 
-    constructor(cmodule, keyName) {
-        this.#keyName = keyName
+    constructor(cmodule, keynames) {
+        this.#keynames = Array.isArray(keynames) ? keynames : [keynames];
         this.#cmodule = cmodule
-        this.#cmodule.wino ??= { }
-        this.#cmodule.wino[this.#keyName] = this
+    }
+    selfRegister(keyname) {
+        if(this.#cmodule.wino[keyname]!==undefined) {
+            console.warn(`Already a component with keyname '${keyname}': replaced`)
+        }
+        this.#cmodule.wino[keyname] = this
     }
     cmodule() {
         return this.#cmodule
     }
-    keyName() {
-        return this.#keyName
+    keynames() {
+        return this.#keynames
     }
     mapNodes(dataAttrPrefix, dataAttrSuffix, action) {
         const dataAttr = this.dataAttribute(dataAttrPrefix, dataAttrSuffix)

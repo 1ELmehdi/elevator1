@@ -1,10 +1,11 @@
+import AnalogIO from "./AnalogIO.js"
 import ComponentBase from "./ComponentBase.js"
 
 export default class Adafruit_NeoPixel extends ComponentBase {
     #leds = []
     
     constructor(cmodule, pin, changedCallback, dataAttrSuffix = undefined) {
-        super(cmodule, `Adafruit_NeoPixel/${pin}`)
+        super(cmodule, [`Adafruit_NeoPixel/${pin}`, AnalogIO.pinKeyname(pin)])
         this.mapNodes('led', dataAttrSuffix, (e, attrVal) => {
             const index = parseInt(attrVal)
             

@@ -115,6 +115,15 @@ bool Adafruit_7segment::begin(uint8_t addr) {
     ) == 1;
 }
 
+size_t Adafruit_7segment::write(const char *buffer, size_t size) {
+  size_t i;
+
+  for(i = 0; i < SEVENSEG_DIGITS; i++) {
+    writeDigitAscii(i, i<size ? buffer[i] : ' ', false);
+  }
+  return i;
+}
+
 void Adafruit_7segment::writeDigitRaw(uint8_t x, uint8_t bitmask) {
     if(x < SEVENSEG_DIGITS) {
         display[x] = bitmask;
@@ -139,4 +148,70 @@ void Adafruit_7segment::writeDisplay() {
         display[2], 
         display[3], display[4]
     );
+}
+
+// From original source
+void Adafruit_7segment::printFloat(double n, uint8_t fracDigits, uint8_t base) {
+  uint8_t numericDigits = 4; // available digits on display
+  bool isNegative = false;   // true if the number is negative
+
+  // is the number negative?
+  if (n < 0) {
+    isNegative = true; // need to draw sign later
+    --numericDigits;   // the sign will take up one digit
+    n *= -1;           // pretend the number is positive
+  }
+
+  // calculate the factor required to shift all fractional digits
+  // into the integer part of the number
+  double toIntFactor = 1.0;
+  for (int i = 0; i < fracDigits; ++i)
+    toIntFactor *= base;
+
+  // create integer containing digits to display by applying
+  // shifting factor and rounding adjustment
+  uint32_t displayNumber = n * toIntFactor + 0.5;
+
+  // calculate upper bound on displayNumber given
+  // available digits on display
+  uint32_t tooBig = 1;
+  for (int i = 0; i < numericDigits; ++i)
+    tooBig *= base;
+
+  // if displayNumber is too large, try fewer fractional digits
+  while (displayNumber >= tooBig) {
+    --fracDigits;
+    toIntFactor /= base;
+    displayNumber = n * toIntFactor + 0.5;
+  }
+
+  // did toIntFactor shift the decimal off the display?
+  if (toIntFactor < 1) {
+    printError();
+  } else {
+    // otherwise, display the number
+    int8_t displayPos = 4;
+
+    for (uint8_t i = 0; displayNumber || i <= fracDigits; ++i) {
+      bool displayDecimal = (fracDigits != 0 && i == fracDigits);
+      writeDigitNum(displayPos--, displayNumber % base, displayDecimal);
+      if (displayPos == 2)
+        writeDigitRaw(displayPos--, 0x00);
+      displayNumber /= base;
+    }
+
+    // display negative sign if negative
+    if (isNegative)
+      writeDigitRaw(displayPos--, 0x40);
+
+    // clear remaining display positions
+    while (displayPos >= 0)
+      writeDigitRaw(displayPos--, 0x00);
+  }
+}
+
+void Adafruit_7segment::printError(void) {
+  for (uint8_t i = 0; i < SEVENSEG_DIGITS; ++i) {
+    writeDigitRaw(i, (i == 2 ? 0x00 : 0x40));
+  }
 }

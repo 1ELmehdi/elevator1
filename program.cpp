@@ -1,56 +1,89 @@
-#include <stdio.h>
-#include <Adafruit_LEDBackpack.h>
-#include <Adafruit_NeoPixel.h>
-#include <LiquidCrystal_I2C.h>
-#include <Keypad.h>
+#include "floor.h"
+#include "cabin.h"
 
-#define I2C_7SEG	0x71
-#define I2C_LCD 	0x20
+#define TIME_OPENED 6000
+#define TIME_DOORS  1700
+#define TIME_FLOOR_SHORT 7150
+#define TIME_FLOOR_LONG  7700
 
-#define LCD_COLS 16
+#define FLOOR_NUM 3
 
-#define ROWS 4
-#define COLS 4
+floor_info building[FLOOR_NUM] = {
+  //                               --led--  --btn--
+  // title        key disp  def    up down  up down pressed
+  { "Parking"   , '*', -1, false ,  9,  0,  84,  -1,   0 },
+  { "RDC"       , '0',  0, true  , 11, 10, 101,  93,   0 },
+  { "1er étage" , '1',  1, false , 13, 12, 118, 110,   0 }
+};
 
-#define KEYMAP "123A" "456B" "789C" "*0#D"
+enum states {
+  STATE_OPENED,
+  STATE_MOVING,
+  STATE_OPENING,
+  STATE_CLOSING
+};
 
-byte rows[] = {11, 10, 9, 8};
-byte cols[] = { 7,  6, 5, 4};
+states state = STATE_OPENED;
+timer_t timer;
+int target = -1;
 
-Keypad keys(KEYMAP, rows, cols, ROWS, COLS);
-LiquidCrystal_I2C lcd   (I2C_LCD , LCD_COLS, 2);
-Adafruit_7segment floorN;
-Adafruit_NeoPixel floors(10, 2, NEO_GRB + NEO_KHZ800);
-int cur = 0;
+unsigned long movetime();
 
 void setup() {
   Serial.begin(9600);
-  floors.begin();
-  floorN.begin(I2C_7SEG);
-  lcd.init();					
-  lcd.backlight();
+  cabin_init(
+    floor_init(building, FLOOR_NUM)
+  );
 }
 
 void loop() {
-  char pressed = keys.getKey();
+  const char* status = nullptr;
 
-  if('0' <= pressed && pressed <= '9') {
-	  char ligne[LCD_COLS+1];
+  floor_readbtns();
+  switch(state) {
+    case STATE_OPENED:
+      target = floor_requested(cabin_current_floor());
+      status = "(waiting...)";
+      if(timer_elapsed(timer, TIME_OPENED) && target>=0) {
+        cabin_door(CABIN_DOOR_CLOSE);
+        state = STATE_CLOSING;
+      }
+      break;
+    case STATE_CLOSING:
+      cabin_door(CABIN_DOOR_CLOSE);
+      status = "(closing doors)";
+      if(timer_elapsed(timer, TIME_DOORS)) {
+        cabin_door(CABIN_DOOR_STOP);
+        state = STATE_MOVING;
+      }
+      break;
+    case STATE_MOVING: 
+      status = "(moving)";
+      if(cabin_move(timer, target, movetime()) == target) {
+        cabin_stop();
+        state = STATE_OPENING;
+      }
+      break;
+    case STATE_OPENING:
+      status = "(opening doors)";
+      cabin_door(CABIN_DOOR_OPEN);
+      if(timer_elapsed(timer, TIME_DOORS)) {
+        cabin_door(CABIN_DOOR_STOP);
+        state = STATE_OPENED;  
+      }
+      break;
+  }
+  floor_feedback(cabin_current_floor(), status);
+}
 
-  	floors.setPixelColor(cur, floors.Color(0, 0, 0));
-    cur = pressed - '0';
+unsigned long movetime() {
+  auto cur = cabin_current_floor();
+  auto odd = (cur % 2) != 0;
 
-    snprintf(ligne, LCD_COLS, "Floor: %d", cur);
-    lcd.setCursor(0,0);
-    lcd.print(ligne);    
-    
-    floors.setPixelColor(cur, floors.Color(255, 64, 0));
-    floors.show();
-
-    floorN.writeDigitNum(4, cur);
-    floorN.writeDigitRaw(0, 1<<0);
-    floorN.writeDigitRaw(1, 1<<6);
-    floorN.writeDigitRaw(3, 1<<3);
-    floorN.writeDisplay();
+  if(target < cur && odd || target > cur && !odd) {
+    return TIME_FLOOR_SHORT;
+  }
+  else {
+    return TIME_FLOOR_LONG;
   }
 }

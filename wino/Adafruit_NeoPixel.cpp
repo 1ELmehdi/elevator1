@@ -22,7 +22,7 @@ bool Adafruit_NeoPixel::show(const char *warn) {
     for(int i = 0; i<count; i++) {
         EM_ASM(
             Module.Wino.byId($0).setColor($1, $2, $3, $4, $5),
-            getId(), i, leds[i][0], leds[i][1], leds[i][2], leds[i][3]
+            id, i, leds[i][0], leds[i][1], leds[i][2], leds[i][3]
         );
     }
     return true;

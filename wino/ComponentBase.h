@@ -14,7 +14,7 @@ protected:
     
     virtual void buildKeyName(char buf[], uint16_t cbuf) const = 0;
 
-public:
+private:
     mutable int id; // mutable: its a cache
 };
 

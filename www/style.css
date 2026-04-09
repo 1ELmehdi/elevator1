@@ -98,7 +98,7 @@ a.callbtn {
     background-image: url('assets/updown.png');
     background-repeat: no-repeat;
 }
-.callbtn.sel  , .callbtn:hover   { 
+.callbtn.sel { 
     background-image: url('assets/updown-light.png'); 
 }
 .up   { top: 219px; }

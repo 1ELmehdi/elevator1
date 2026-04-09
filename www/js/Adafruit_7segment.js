@@ -22,7 +22,6 @@ export default class Adafruit_7segment extends ComponentBase {
         console.debug(`Adafruit_7segment on i2c address ${i2cAddr} initialized ${this.#digits.length} digits.`)
     }
     setDigits(vals) {
-        console.debug(`Change : ${vals}`)
         for(let i in vals) {
             if(this.#digits[i]===undefined) {
                 console.warn(`Try to set unknown digit ${digit} to ${val}`)
@@ -38,7 +37,6 @@ export default class Adafruit_7segment extends ComponentBase {
                 const node = digit.nodes[j]
 
                 if(node) {
-                    console.debug(`Digit ${i}, change segment ${mask}`)
                     this.#cb(node, (val&mask)!=0)
                 }
                 else {

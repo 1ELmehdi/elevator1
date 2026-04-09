@@ -2,15 +2,20 @@ import ComponentBase from "./ComponentBase.js"
 
 export default class Wino {
     #components
+    #idsByKeyname = {}
     #wino_loop
-    #io_modes = []
-    #io = []
 
     constructor(cmodule, components) {
         this.#components = components.filter(c => 
             c instanceof ComponentBase 
             || console.warn(`Must inherit ComponentBase, ignored : ${c}`
         ))
+        this.#components.forEach((c, id) => c.keynames().forEach(kn => {
+            if(this.#idsByKeyname[kn] != undefined) {
+                console.warn(`Component ${this.#idsByKeyname[kn]} in conflict with ${id} with name ${kn}`)
+            }
+            this.#idsByKeyname[kn] = id
+        }))
         this.#wino_loop  = async () => await cmodule.ccall('wino_loop' , undefined, [], [], { async: true })
         
         cmodule.Wino = this 
@@ -26,22 +31,9 @@ export default class Wino {
         requestAnimationFrame(() => this.loop())
     }
     idOf(keyName) {
-        for(const i in this.#components) {
-            if(this.#components[i].keyName() == keyName) {
-                return i
-            }
-        }
+        return this.#idsByKeyname[keyName]
     }
     byId(id) {
         return this.#components[id]  
-    }
-    setIoMode(pin, mode) {
-        this.#io_modes[pin] = mode
-    }
-    setIo(pin, val) {
-        this.#io[pin] = val
-    }
-    getIo(pin) {
-        return this.#io[pin] ?? 0
     }
 }
