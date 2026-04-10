@@ -7,6 +7,8 @@
 
 #include <Adafruit_LEDBackpack.h>
 
+#define FLOOR_FEEDBACK_PERIOD 100 
+
 #define I2C_LCD       0x20
 #define I2C_7SEG_BASE	0x70
 

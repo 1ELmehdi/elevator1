@@ -8,7 +8,7 @@
 /** @typedef timer_t
  * @brief Type definition for time tracking, based on Arduino's millisecond counter.
  */
-typedef unsigned long timer_t;
+typedef unsigned long timer_ms;
 
 /**
  * @brief Resets the timer to the current system uptime.
@@ -16,7 +16,7 @@ typedef unsigned long timer_t;
  * This is typically used to start a new timing sequence.
  * * @param timer A reference to the timer_t variable to be reset.
  */
-void timer_reset  (timer_t& timer);
+void timer_reset  (timer_ms& timer);
 
 /**
  * @brief Checks if a specific duration has passed since the last reset.
@@ -28,6 +28,6 @@ void timer_reset  (timer_t& timer);
  * @return true If the time elapsed is greater than or equal to the limit.
  * @return false If the duration has not yet been reached.
  */
-bool timer_elapsed(timer_t& timer, unsigned long limit);
+bool timer_elapsed(timer_ms& timer, unsigned long limit);
 
 #endif

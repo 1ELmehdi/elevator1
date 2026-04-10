@@ -27,7 +27,7 @@ void cabin_door(int dir) {
   motor(PIN_MOTOR_DOORS_A, PIN_MOTOR_DOORS_B, dir);
 }
 
-int cabin_move(timer_t& start, int to_floor, unsigned long duration) {
+int cabin_move(timer_ms& start, int to_floor, unsigned long duration) {
   if(to_floor != _current_floor) {
     auto dir = motor_dir(to_floor);
 

@@ -46,7 +46,7 @@ int  cabin_current_floor();
  * @param floor_duration The time (in milliseconds) required to travel between two floors.
  * @return int The updated current floor index.
  */
-int  cabin_move(timer_t& start, int to_floor, unsigned long floor_duration);
+int  cabin_move(timer_ms& start, int to_floor, unsigned long floor_duration);
 
 /**
  * @brief Stops the cabin traction motor immediately.

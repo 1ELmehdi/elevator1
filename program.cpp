@@ -11,8 +11,8 @@
 floor_info building[FLOOR_NUM] = {
   //                               --led--  --btn--
   // title        key disp  def    up down  up down pressed
-  { "Parking"   , '*', -1, false ,  9,  0,  84,  -1,   0 },
-  { "RDC"       , '0',  0, true  , 11, 10, 101,  93,   0 },
+  { "Parking  " , '*', -1, false ,  9,  0,  84,  -1,   0 },
+  { "RDC      " , '0',  0, true  , 11, 10, 101,  93,   0 },
   { "1er étage" , '1',  1, false , 13, 12, 118, 110,   0 }
 };
 
@@ -24,7 +24,7 @@ enum states {
 };
 
 states state = STATE_OPENED;
-timer_t timer;
+timer_ms timer;
 int target = -1;
 
 unsigned long movetime();
@@ -43,7 +43,7 @@ void loop() {
   switch(state) {
     case STATE_OPENED:
       target = floor_requested(cabin_current_floor());
-      status = "(waiting...)";
+      status = "(waiting...)   ";
       if(timer_elapsed(timer, TIME_OPENED) && target>=0) {
         cabin_door(CABIN_DOOR_CLOSE);
         state = STATE_CLOSING;
@@ -58,7 +58,7 @@ void loop() {
       }
       break;
     case STATE_MOVING: 
-      status = "(moving)";
+      status = "(moving)       ";
       if(cabin_move(timer, target, movetime()) == target) {
         cabin_stop();
         state = STATE_OPENING;

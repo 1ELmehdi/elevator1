@@ -1,6 +1,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Adafruit_NeoPixel.h>
 #include <Keypad.h>
+#include "timer.h"
 
 #include "floor.h"
 
@@ -42,7 +43,11 @@ int floor_init(floor_info floors[], size_t floor_num) {
 }
 
 void floor_feedback(int current, const char* status) {
-  _lcd.clear();
+  static timer_ms refresh = 0L;
+  
+  if(!timer_elapsed(refresh, FLOOR_FEEDBACK_PERIOD)) {
+    return;
+  }
   _lcd.setCursor(0, 0);
   _lcd.print(_floors[current].title);
   if(status) {
