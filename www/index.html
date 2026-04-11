@@ -155,68 +155,14 @@
     <script src="a.out.js"></script>
     <script type="module">
         import makeDraggable from './js/DraggableDiv.js'
+        import Building from './js/Elevator.js'
 
+        const building = new Building(
+            ['#floor0', '#floor1', '#floor2', '#floor3'], 
+            ['.left', '.right'], 
+            '#cabin'
+        )
         makeDraggable('.panel')
-
-        const FLOOR_COUNT = 6;
-        const FLOORS_BY_COLUMN = 2;
-        const CABIN_FLOOR_X = 230;
-        const CABIN_FLOOR_Y = 61;
-        const CABIN_HEIGHT = 231;
-        const FLOOR_HEIGHT = 430;
-        const COLUMN_WIDTH = 518;
-        const FIRST_FLOOR = CABIN_HEIGHT + FLOOR_HEIGHT;
-        const COLUMN_HEIGHT   = FLOORS_BY_COLUMN*CABIN_HEIGHT + FLOOR_HEIGHT;
-        const BUILDING_HEIGHT = (FLOOR_COUNT/FLOORS_BY_COLUMN)*COLUMN_HEIGHT - CABIN_HEIGHT;
-        const DOOR_WIDTH = 92;
-        const DOOR_LEFT = 134;
-        const DOOR_RIGHT = 410;
-        const cabin = document.querySelector('#cabin');
-        const doors = [];
-        const between = (n, min, max) => min <= n && n < max
-
-        let position = FIRST_FLOOR
-
-        function currentFloor() {
-            return Math.floor(position * 2 / COLUMN_HEIGHT)
-        }
-        function updateDoors(floor) {
-            const door = doors[floor]
-
-            door.left.style.left  = `${DOOR_LEFT + door.pos}px`
-            door.right.style.left = `${DOOR_RIGHT - door.pos}px`
-        }
-
-        function moveDoors(dir) {
-            const floor = currentFloor()
-
-            if(between(floor, 0, FLOOR_COUNT)) {
-                const nextPos = doors[floor].pos + dir
-                
-                if(between(nextPos, 0, DOOR_WIDTH+1)) {
-                    doors[floor].pos = nextPos
-                    updateDoors(floor)
-                }
-            }
-        }
-        function moveElevator(dir) {
-            const nextPos = position + dir;
-
-            if(between(nextPos, CABIN_HEIGHT, BUILDING_HEIGHT)) {
-                position = nextPos;    
-                cabin.style.top  = `${2*FLOOR_HEIGHT - CABIN_FLOOR_Y - position % COLUMN_HEIGHT}px`;
-                cabin.style.left = `${CABIN_FLOOR_X + COLUMN_WIDTH * Math.floor(position / COLUMN_HEIGHT)}px`;
-            }
-        }
-
-        for(let i = 0; i < FLOOR_COUNT; i++) {
-            doors.push({
-                left : document.querySelector(`#floor${i} .left`), 
-                right: document.querySelector(`#floor${i} .right`),
-                pos: i==currentFloor() ? 0 : DOOR_WIDTH
-            });
-            updateDoors(i);
-        }
 
         import Adafruit_NeoPixel from "./js/Adafruit_NeoPixel.js"
         import Adafruit_7segment from "./js/Adafruit_7segment.js"
@@ -238,7 +184,9 @@
         await window.wasmLoaded
         const components = [
             // Motors
-            new L293DMotors      (Module, PIN_MOTORS, moveElevator, moveDoors),
+            new L293DMotors      (Module, PIN_MOTORS, 
+                dir => dir && building.moveElevator(dir), 
+                dir => dir && building.moveDoors   (dir)),
             // Elevator panel
             new LiquidCrystal_I2C(Module, 0x20),
             new Keypad           (Module, PIN_KEYPAD_ROWS, PIN_KEYPAD_COLS),
