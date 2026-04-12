@@ -16,7 +16,12 @@ body {
     width: 513px;
     height: 430px;
     background-image: url('assets/stairs.png');
-    position: relative
+    position: relative;
+    pointer-events: none;
+}
+
+.floor a {
+    pointer-events: initial;
 }
 
 /* Elevator cabin */
@@ -68,6 +73,41 @@ body {
     background-image: url('assets/floor.png');
 }
 
+/* Cabin form */
+
+#cabin form {
+    position: absolute;
+    display: block;
+    padding: 5px;
+    right: 0;
+    top: 0;
+    width: 12px;
+    height: 10px;
+    background-color: white;
+    overflow: hidden;
+    border: 3px solid #333;
+    border-radius: 10px;
+    transition: width 200ms, height 200ms;
+}
+
+#cabin form:hover {
+    width: 85%;
+    height: fit-content;
+    transition: width 200ms, height 200ms;
+}
+
+#cabin form {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: black;
+}
+#cabin form label::before       { content: "••• " }
+#cabin form:hover label::before { content: none; }
+#cabin form input[type="range"] {
+    width: 95%;
+    display: block;
+}
+
 /* Stairs */
 
 .stairs {
@@ -77,21 +117,22 @@ body {
     width: 97px;
     height: 215px;
     overflow: hidden;
+    pointer-events: initial;
 }
 
-.stair-door {
+.stair-door, .stair-door.open, .stairs:hover .stair-door {
     margin:0;
     position: absolute;
     background-image: url('assets/door.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     transition: width 1s;
-    width: 97px;
+    width: 32px;
     height: 215px;
 }
 
-.stair-door.open, .floor:hover .stair-door, .stair-door:nth-child(2) {
-    width: 32px;
+.stair-door:nth-child(1) {
+    width: 97px;
     transition: width 1s;
 }
 
@@ -261,7 +302,7 @@ li.segoff { background-position-x: 0; }
     background-image: url('assets/npc.png');
 }
 
-li:has(a:hover) .mood {
+li:has(a:hover) .mood, .mood.show {
     display: block;
 }
 
@@ -392,5 +433,6 @@ li:has(a:hover) .mood {
 .corridor .waiting li:nth-child(10) .npc { height: 165px; }
 .corridor .waiting li:nth-child(11) { left: -55px; top: 40px; }
 
-.corridor .exit li:nth-child(1) { left: 325px; top: 28px; pointer-events: none; }
-.corridor .exit li:nth-child(2) { left: 420px; top: 45px; pointer-events: none; }
+.corridor .exit li { display: none; }
+.corridor .exit li:nth-child(1) { display: block; left: 325px; top: 28px; pointer-events: none; }
+.corridor .exit li:nth-child(2) { display: block; left: 420px; top: 45px; pointer-events: none; }

@@ -3,10 +3,15 @@ import ComponentBase from "./ComponentBase.js";
 export default class AnalogIO extends ComponentBase {
     #vals = []
     constructor(cmodule, pin_s) {
-        super(cmodule, Array.isArray(pin_s) 
-            ? pin_s.map(pin => AnalogIO.pinKeyname(pin))
-            : AnalogIO.pinKeyname(pin_s)
-        )
+        const pins = Array.isArray(pin_s) ? pin_s : [ pin_s ] 
+
+        super(cmodule, pins.map(pin => AnalogIO.pinKeyname(pin)))
+        pins.forEach(pin => this.mapNodes('io', pin, (e, attrVal) => {
+            const [attr, event] = attrVal.split('/')
+
+            e.addEventListener(event, () => this.set(pin, e[attr]))
+            this.set(pin, e[attr])
+        }))
     }
     static pinKeyname(pin) {
         return `io/${pin}`

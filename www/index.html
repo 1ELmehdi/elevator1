@@ -11,7 +11,15 @@
 </head>
 <body>
     <div class="building">
-        <div id="cabin"><ul></ul></div>
+        <div id="cabin">
+            <ul></ul>
+            <form>
+                <label for="pressure">Sensor 1 (weight):</label> <output name='feedbackw' for="pressure">0</output>
+                <input type="range" id="pressure" name="pressure" min="0" max="1023" data-io-16="value/oninput" oninput="this.form['feedbackw'].value=`${this.value}`" value="0">
+                <label for="presence">Sensor 2 (presence):</label> <output name='feedbackp' for="presence">1023</output>
+                <input type="range" id="presence" name="presence" min="0" max="1023" data-io-17="value/oninput" oninput="this.form['feedbackp'].value=`${this.value}`" value="1023">
+            </form>
+        </div>
         <div class="floor" id="floor1">
             <div class="digits">
             <ul>
@@ -134,17 +142,17 @@
                     7 8 9 C |  8  9 10 11
                     * 0 # D | 12 13 14 15
                 -->
-                <li><a href="#" class="btn row0" data-led-neo="4" data-pad="2">3</a></li>
-                <li><a href="#" class="btn row0" data-led-neo="5" data-pad="4">4</a></li>
-                <li><a href="#" class="btn row1" data-led-neo="2" data-pad="0">1</a></li>
-                <li><a href="#" class="btn row1" data-led-neo="3" data-pad="1">2</a></li>
-                <li><a href="#" class="btn row2" data-led-neo="0" data-pad="12">-1</a></li>
-                <li><a href="#" class="btn row2" data-led-neo="1" data-pad="13">0</a></li>
+                <li><a href="#" id='panel3' class="btn row0" data-led-neo="4" data-pad="2">3</a></li>
+                <li><a href="#" id='panel4' class="btn row0" data-led-neo="5" data-pad="4">4</a></li>
+                <li><a href="#" id='panel1' class="btn row1" data-led-neo="2" data-pad="0">1</a></li>
+                <li><a href="#" id='panel2' class="btn row1" data-led-neo="3" data-pad="1">2</a></li>
+                <li><a href="#" id='panel-1' class="btn row2" data-led-neo="0" data-pad="12">-1</a></li>
+                <li><a href="#" id='panel0' class="btn row2" data-led-neo="1" data-pad="13">0</a></li>
 
-                <li><a href="#" class="btn row3" data-led-neo="6" data-pad="7">&gt;&lt;</a></li>
-                <li><a href="#" class="btn row3" data-led-neo="7" data-pad="11">&lt;&gt;</a></li>
+                <li><a href="#" id='panel-close' class="btn row3" data-led-neo="6" data-pad="7">&gt;&lt;</a></li>
+                <li><a href="#" id='panel-open' class="btn row3" data-led-neo="7" data-pad="11">&lt;&gt;</a></li>
             </ul>
-            <a href="#" class="btnstop" data-led-neo="8" data-pad="15"></a>
+            <a href="#" id="panel-stop" class="btnstop" data-led-neo="8" data-pad="15"></a>
         </div>
     </div>
     <script>
@@ -154,22 +162,16 @@
     </script>
     <script src="a.out.js"></script>
     <script type="module">
-        import makeDraggable from './js/DraggableDiv.js'
-        import Building from './js/Elevator.js'
-
-        const building = new Building(
-            ['#floor0', '#floor1', '#floor2', '#floor3'], 
-            ['.left', '.right'], 
-            '#cabin'
-        )
-        makeDraggable('.panel')
-
         import Adafruit_NeoPixel from "./js/Adafruit_NeoPixel.js"
         import Adafruit_7segment from "./js/Adafruit_7segment.js"
         import LiquidCrystal_I2C from "./js/LiquidCrystal_I2C.js"
         import ResistorLadderPushBtns from "./js/ResistorLadderPushBtns.js"
         import L293DMotors from "./js/L293DMotors.js"
+        import AnalogIO from "./js/AnalogIO.js"
         import Keypad from "./js/Keypad.js"
+        import makeDraggable from './js/DraggableDiv.js'
+        import Building from './js/Elevator.js'
+        import Employee from './js/Employee.js'
         import Wino from "./js/Wino.js"
         
         const PIN_MOTORS      = [ 2, 3, 4, 5 ]
@@ -177,6 +179,8 @@
         const PIN_KEYPAD_COLS = [  9,  8,  7,  6 ]
         const PIN_CALLBTNS    = 14 // A0
         const PIN_NEOPIXEL    = 15
+        const PIN_PRESSURE    = 16
+        const PIN_PRESENCE    = 17
         
         const neopixelOnOff = (l, v) => Adafruit_NeoPixel.OnOff(l, v, 'sel')
         const segmentOnOff  = (s, v) => s.classList.toggle('sel', v)
@@ -190,6 +194,9 @@
             // Elevator panel
             new LiquidCrystal_I2C(Module, 0x20),
             new Keypad           (Module, PIN_KEYPAD_ROWS, PIN_KEYPAD_COLS),
+            // Sensors
+            new AnalogIO         (Module, PIN_PRESSURE),
+            new AnalogIO         (Module, PIN_PRESENCE),
             // Leds Panel: 0-8, Floor down/up leds: 9, 10-11, 12-13, 14-15, 16-17, 18
             new Adafruit_NeoPixel(Module, PIN_NEOPIXEL, neopixelOnOff, 'neo'),
             // Upper display
@@ -200,6 +207,35 @@
             new ResistorLadderPushBtns(Module, PIN_CALLBTNS, 10000, 'btn')
         ]
         const wino = new Wino(Module, components)
+        const building = new Building({
+            floors : ['#floor0', '#floor1', '#floor2'], 
+            doors  : ['.left', '.right'], 
+            cabin  : '#cabin',
+            analog : { pressure: '#pressure', presence: '#presence' },
+            buttons: {                       cabin0: '#panel-1', floor0up: '#floor0 .up',
+                floor1down: '#floor1 .down', cabin1: '#panel0' , floor1up: '#floor1 .up',
+                floor2down: '#floor2 .down', cabin2: '#panel1' , floor2up: '#floor2 .up',
+                floor3down: '#floor3 .down', cabin3: '#panel2' , floor3up: '#floor3 .up',
+                floor4down: '#floor4 .down', cabin4: '#panel3' , floor4up: '#floor4 .up',
+                floor5down: '#floor5 .down', cabin5: '#panel4',
+                cabinO: '#panel-open', cabinC: '#panel-close', cabinS: '#panel-stop'
+            }
+        })
+        makeDraggable('.panel')
+
+        const NPC_TIME_WORKING_MIN  = 20000
+        const NPC_TIME_WORKING_MAX  = 60000
+        const NPC_UPDATE_PERIOD     =   150
+        const NPC_GAP               =    23
+        
+        const people = Array(74, 60, 78, 62, 70, 71, 85, 52, 66, 76, 62, 65, 79, 54, 68, 82)
+            .map(async (weight, i) => {
+                const one = new Employee(building, i, weight, NPC_TIME_WORKING_MIN, NPC_TIME_WORKING_MAX)
+                
+                one.run(NPC_UPDATE_PERIOD)
+                await new Promise(r => setTimeout(r, NPC_GAP))
+                return one
+            })
     </script>
 </body>
 </html>
