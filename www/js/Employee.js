@@ -58,7 +58,7 @@ export default class Employee {
         this.#weight = weight
         this.#character = character
     }
-    asyncrun(updatePeriod) {
+    run(updatePeriod) {
         const self = this
         setInterval(() => self.#update(updatePeriod), updatePeriod)
     }
