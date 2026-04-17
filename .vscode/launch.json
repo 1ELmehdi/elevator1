@@ -5,12 +5,18 @@
             "type": "node-terminal",
             "name": "Rebuild all",
             "command": "bash ./build.sh ${workspaceFolder} ${config:livePreview.portNumber}",
-            "request": "launch", 
+            "request": "launch",
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "\\blistening on\\s+(https?://\\S+)",
                 "uriFormat": "%s"
             }
+        },
+        {
+            "type": "chrome",
+            "name": "http://127.0.0.1:3000/www/index.html",
+            "request": "launch",
+            "url": "http://127.0.0.1:3000/www/index.html"
         }
     ]
 }
