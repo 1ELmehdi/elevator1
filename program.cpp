@@ -23,12 +23,14 @@ enum states {
   STATE_OPENED,
   STATE_MOVING,
   STATE_OPENING,
-  STATE_CLOSING
+  STATE_CLOSING,
+  STATE_STOPPED
 };
 
 states state = STATE_OPENED;
 timer_ms timer;
 int target = -1;
+bool stopped = false;
 
 unsigned long movetime();
 
@@ -43,6 +45,23 @@ void loop() {
   const char* status = nullptr;
 
   floor_readbtns();
+
+  // Bouton STOP : bascule entre arrêt et redémarrage
+  if(floor_stop_pressed()) {
+    stopped = !stopped;
+    if(stopped) {
+      cabin_stop();
+      state = STATE_STOPPED;
+    } else {
+      state = STATE_OPENED;
+    }
+  }
+
+  if(state == STATE_STOPPED) {
+    floor_feedback(cabin_current_floor(), "(STOP)         ");
+    return;
+  }
+
   switch(state) {
     case STATE_OPENED:
       target = floor_requested(cabin_current_floor());
@@ -74,6 +93,8 @@ void loop() {
         cabin_door(CABIN_DOOR_STOP);
         state = STATE_OPENED;  
       }
+      break;
+    default:
       break;
   }
   floor_feedback(cabin_current_floor(), status);

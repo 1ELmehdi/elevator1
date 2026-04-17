@@ -19,7 +19,7 @@
 
 #define KEYMAP "123A" "456B" "789C" "*0#D"
 
-#define MAX_LEDS         14
+#define MAX_LEDS         19
 #define MAX_LCD_COLS     16
 #define MAX_FLOOR_TITLE  MAX_LCD_COLS+1
 
@@ -55,38 +55,35 @@ struct floor_info {
 
 /**
  * @brief Initializes the hardware components for all floors.
- * * Configures displays, LEDs, and pins based on the provided floor configuration array.
- * It identifies the designated starting floor during the process.
  * @param floors Array of floor_info structures.
  * @param floor_num Total number of floors in the system.
- * @return int The index of the starting floor (determined by the 'def' field).
+ * @return int The index of the starting floor.
  */
 int  floor_init     (floor_info floors[], size_t floor_num);
 
 /**
  * @brief Polls the state of all elevator buttons.
- * Reads inputs from the landing call buttons (hall calls) and the internal 
- * cabin keypad (car calls).
  */
 void floor_readbtns ();
 
 /**
  * @brief Provides visual/auditory feedback to the users.
- * Updates the leds, 7-segment displays at every landing and the cabin LCD with the 
- * current floor number.
- * @param current The index of the current floor the elevator is at.
- * @param status Optional string message to display on the second line of the cabin LCD (e.g., "Moving", "Door Open").
+ * @param current The index of the current floor.
+ * @param status Optional string message for the LCD second line.
  */
 void floor_feedback (int current, const char *status = nullptr);
 
 /**
  * @brief Determines the next destination floor based on active requests.
- * Evaluates pending calls to decide where the elevator should go next relative 
- * to its current position. This function also clears (sets to 0) the request flags 
- * for the floor provided in the 'from' parameter once arrived.
- * @param from The index of the floor where the elevator is currently located or starting from.
- * @return int The index of the next floor to visit, or a sentinel value if no floors are requested.
+ * @param from The index of the current floor.
+ * @return int The index of the next floor, or -1 if none.
  */
 int  floor_requested(int from);
+
+/**
+ * @brief Checks if the STOP button has been pressed.
+ * @return true if STOP was pressed, false otherwise.
+ */
+bool floor_stop_pressed();
 
 #endif
