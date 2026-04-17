@@ -86,4 +86,16 @@ int  floor_requested(int from);
  */
 bool floor_stop_pressed();
 
+/**
+ * @brief Checks if the open door button (<>) has been pressed.
+ * @return true if open button was pressed, false otherwise.
+ */
+bool floor_open_pressed();
+
+/**
+ * @brief Checks if the close door button (><) has been pressed.
+ * @return true if close button was pressed, false otherwise.
+ */
+bool floor_close_pressed();
+
 #endif

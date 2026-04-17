@@ -24,7 +24,9 @@ enum states {
   STATE_MOVING,
   STATE_OPENING,
   STATE_CLOSING,
-  STATE_STOPPED
+  STATE_STOPPED,
+  STATE_FORCE_OPEN,
+  STATE_FORCE_CLOSE
 };
 
 states state = STATE_OPENED;
@@ -62,6 +64,18 @@ void loop() {
     return;
   }
 
+  // Boutons forcer portes uniquement en attente
+  if(state == STATE_OPENED) {
+    if(floor_open_pressed()) {
+      cabin_door(CABIN_DOOR_OPEN);
+      state = STATE_FORCE_OPEN;
+    }
+    else if(floor_close_pressed()) {
+      cabin_door(CABIN_DOOR_CLOSE);
+      state = STATE_FORCE_CLOSE;
+    }
+  }
+
   switch(state) {
     case STATE_OPENED:
       target = floor_requested(cabin_current_floor());
@@ -69,6 +83,20 @@ void loop() {
       if(timer_elapsed(timer, TIME_OPENED) && target>=0) {
         cabin_door(CABIN_DOOR_CLOSE);
         state = STATE_CLOSING;
+      }
+      break;
+    case STATE_FORCE_OPEN:
+      status = "(door open)    ";
+      if(floor_close_pressed() || floor_stop_pressed()) {
+        cabin_door(CABIN_DOOR_STOP);
+        state = STATE_OPENED;
+      }
+      break;
+    case STATE_FORCE_CLOSE:
+      status = "(door close)   ";
+      if(floor_open_pressed() || floor_stop_pressed()) {
+        cabin_door(CABIN_DOOR_STOP);
+        state = STATE_OPENED;
       }
       break;
     case STATE_CLOSING:
